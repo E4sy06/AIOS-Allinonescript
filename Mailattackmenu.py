@@ -1,3 +1,0 @@
-def Mailattackmenu():
-    # Mailbomber, Mailaccount passwort knacken maybe...
-    exit
