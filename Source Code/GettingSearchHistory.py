@@ -17,10 +17,10 @@ def GettingSearchHistory():
         print("No Chrome Searching History")
 
     try:
-        data_path = os.path.expanduser(
+        path = os.path.expanduser(
             '~')+"/.mozilla/firefox/0mttxac9.default"
-        files = os.listdir(data_path)
-        history_db = os.path.join(data_path, 'places.sqlite')
+        files = os.listdir(path)
+        history_db = os.path.join(path, 'places.sqlite')
         c = sqlite3.connect(history_db)
         cursor = c.cursor()
         select_statement = "select moz_places.url, moz_places.visit_count from moz_places;"

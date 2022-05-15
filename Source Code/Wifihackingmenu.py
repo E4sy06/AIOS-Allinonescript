@@ -6,7 +6,7 @@ def Wifihackingmenu(nameofthemainclass):
     os.system("sleep 3 && clear")
     os.system("clear")
 
-    def wire():
+    def menuchange():
         os.system("clear")
         print("""
         1) Aircrack-ng                          17) kalibrate-rtl
@@ -104,7 +104,7 @@ def Wifihackingmenu(nameofthemainclass):
             os.system("apt-get install -y aircrack-ng asleap bluelog blueranger bluesnarfer bully cowpatty crackle eapmd5pass fern-wifi-cracker ghost-phisher giskismet gqrx kalibrate-rtl killerbee kismet mdk3 mfcuk mfoc mfterm multimon-ng pixiewps reaver redfang spooftooph wifi-honey wifitap wifite")
         else:
             print("Invalid Input")
-        wire()
+        menuchange()
 
     print("""
 
@@ -126,27 +126,27 @@ def Wifihackingmenu(nameofthemainclass):
         (9)Create wordlist                                     
         (10)WPS Networks attacks (Bssid,monitor mode needed)
         (11)Scan for WPS Networks
-        (00)Exit
+        (12)Exit
         -----------------------------------------------------------------------
         """)
     print("\nEnter your choise here >>> ")
     var = int(input(""))
     if var == 1:
-        print("\nEnter the interface:(Default(wlan0/wlan1)) >>> ")
+        print("\nEnter the interface: >>> ")
         wlaninterface = input("")
         order = "airmon-ng start {} && airmon-ng check kill".format(
             wlaninterface)
         os.system(order)
         Wifihackingmenu()
     elif var == 2:
-        print("\nEnter the interface:(Default(wlan0mon/wlan1mon)) >>> ")
+        print("\nEnter the interface: >>> ")
         wlaninterface = input("")
         order = "airmon-ng stop {} && service network-manager restart".format(
             wlaninterface)
         os.system(order)
         Wifihackingmenu()
     elif var == 3:
-        print("\nEnter the interface:(Default (wlan0mon/wlan1mon)) >>> ")
+        print("\nEnter the interface: >>> ")
         interface = input("")
         order = "airodump-ng {} -M".format(interface)
         print("When the Network is shown, Press CTRL+C")
@@ -155,29 +155,28 @@ def Wifihackingmenu(nameofthemainclass):
         os.system("sleep 10")
         Wifihackingmenu()
     elif var == 4:
-        print("\nEnter the interface:(Default >>(wlan0mon/wlan1mon)) >>> ")
+        print("\nEnter the interface: >>> ")
         interface = input("")
         order = "airodump-ng {} -M".format(interface)
         print("\nWhen Done Press CTRL+c")
         os.system("sleep 7")
         os.system(order)
-        print("\nEnter the Bssid of the target network >>> ")
+        print("\nEnter the Bssid >>> ")
         bssid = str(input(""))
-        print("\nEnter the channel of the target network >>> ")
+        print("\nEnter the channel >>> ")
         channel = int(input())
-        print("Enter the path of the folder where the handshack will be saved >>> ")
+        print("Enter the path of the folder/place where the handshack will be saved >>> ")
         path = str(input(""))
         print(
-            "\nEnter the number of the packets [1-10000] ( 0 for unlimited number)")
-        print("the number of the packets can Depends on the Distance Between your device and the target network >>> ")
+            "\nEnter the number of the packets [1-10000] ( 0 = unlimited) >>> ")
         dist = int(input(""))
         order = "airodump-ng {} --bssid {} -c {} -w {} | xterm -e aireplay-ng -0 {} -a {} {}".format(
             interface, bssid, channel, path, dist, bssid, interface)
         os.system(order)
         Wifihackingmenu()
     elif var == 5:
-        wire()
-    elif var == 00:
+        menuchange()
+    elif var == 12:
         nameofthemainclass()
     elif var == 6:
         if os.path.exists("/usr/share/wordlists/rockyou.txt") == True:
